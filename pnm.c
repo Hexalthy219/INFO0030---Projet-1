@@ -5,7 +5,7 @@
  * les fonctions de manipulation d'images PNM.
  * 
  * @author: Russe Cyril s170220
- * @date: 18-02-2020
+ * @date: 19-02-2020
  * @projet: INFO0030 Projet 1
  */
 
@@ -21,15 +21,15 @@
  *
  */
 struct PNM_t {
-
-   /* Insérez ici les champs de la structure PNM */
-
-};
+   char *nombre_magique;
+   unsigned int valeur_max;
+   unsigned int **image;
+}PNM;
 
 
 int load_pnm(PNM **image, char* filename) {
 
-   /* Insérez le code ici */
+   
 
    return 0;
 }
