@@ -43,7 +43,7 @@ int load_pnm(/*PNM **image,*/ char* filename) {
       return -3;
    type_image = verification_type_image(fichier);
 
-   printf("type fichier : %u\n", type_image);
+   printf("type fichier : %d\n", type_image);
 
    return 0;
 }
@@ -56,8 +56,11 @@ int verification_type_image(FILE*  fichier){
    int nbr_fscanf = 0;
 
    do{
-      nbr_fscanf = fscanf(fichier, "%s[^\n]", type_image);
-
+      if (type_image[0]=='#')
+         nbr_fscanf = fscanf(fichier, "%*[^\n]");
+      
+      nbr_fscanf= fscanf(fichier, "%s[^\n]", type_image);
+         
       if (type_image[0]!='#'){
          numero_ligne++;
          if (type_image[0]!='P')
@@ -71,6 +74,7 @@ int verification_type_image(FILE*  fichier){
          else 
             return -1;
       }
+
    }while(numero_ligne==0 && nbr_fscanf>0);
    return -1;
 }
