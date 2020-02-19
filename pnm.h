@@ -42,7 +42,28 @@ typedef struct PNM_t PNM;
  *    -3 Contenu du fichier malformé
  *
  */
-int load_pnm(PNM **image, char* filename);
+int load_pnm(/*PNM **image,*/ char* filename);
+
+
+
+/**
+ * verification_type_image
+ * 
+ * lis le fichier PNM et en detecte le type
+ * 
+ * @param fichier un pointeur sur un fichier de type FILE
+ * 
+ * @pre: \
+ * @post: \
+ * 
+ * @return:
+ *       3  type PPM
+ *       2  type PGM
+ *       1  type PBM
+ *      -1  Numéro magique malformé
+ * 
+ */
+int verification_type_image(FILE*  fichier);
 
 /**
  * write_pnm
