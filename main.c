@@ -5,7 +5,7 @@
  * de fichiers pnm.
  *
  * @author: Russe Cyril s170220
- * @date: 18-02-2020
+ * @date: 20-02-2020
  * @projet: INFO0030 Projet 1
  */
 
@@ -21,9 +21,16 @@
 
 int main(int argc, char *argv[]) {
 
-   char *optstring = "";
+   /* options :
+   *  -h -> help
+   *  
+   */
+   char *optstring = "h";
 
    /* Insérez le code ici */
+   int retour_chargement = load_pnm("exemples_images/antilope.ppm");
+   printf("retour chargement : %d", retour_chargement);
+   
 
    return 0;
 }

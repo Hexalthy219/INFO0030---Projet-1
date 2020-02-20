@@ -5,7 +5,7 @@
  * des fonctions pour la manipulation d'images PNM.
  * 
  * @author: Russe Cyril s170220
- * @date: 18-02-2020
+ * @date: 20-02-2020
  * @projet: INFO0030 Projet 1
  */
 
@@ -21,6 +21,12 @@
  *
  */
 typedef struct PNM_t PNM;
+
+/**
+ * Déclaration de l'énumération reprenenat les différents type de fichier PNM
+ * 
+ */
+typedef enum Type_PNM_t Type_PNM;
 
 
 /**
@@ -57,13 +63,38 @@ int load_pnm(/*PNM **image,*/ char* filename);
  * @post: \
  * 
  * @return:
- *       3  type PPM
- *       2  type PGM
- *       1  type PBM
- *      -1  Numéro magique malformé
+ *       PBM
+ *       PGM
+ *       PPM
+ *      -1  Numéro magique malformé / inexistant
  * 
  */
-int verification_type_image(FILE*  fichier);
+Type_PNM verification_type_image(FILE*  fichier);
+
+/**
+ * verification_extension_fichier
+ * 
+ * vérifie si l'extension du fichier dans le nom de celui-ci correspond au type de type_image déduit du nombre magique
+ * 
+ * @param type_image enum contenant le type de l'image de type Type_PNM
+ * @param filename une chaine de caractère contenant le nom du fichier
+ * 
+ * @return  
+ *       0 succès de la vérification
+ *      -1 échec de la vérification
+ * 
+ */ 
+int verification_extension_fichier(Type_PNM type_image, char *filename);
+
+/**
+ * Type_PNM_vers_chaine
+ * 
+ * revoit une chaine de caractère correspondant aux différents éléments de l'énumération "Type_PNM"
+ * 
+ * @param type_image une variable de type Type_PNM
+ * 
+ */
+char *Type_PNM_vers_chaine(Type_PNM type_image);
 
 /**
  * write_pnm
