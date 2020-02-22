@@ -88,7 +88,7 @@ int enregistrement_dimension_image(Dimension_pixel *dimension, FILE *fichier);
  *      -1  Numéro magique malformé / inexistant
  * 
  */
-Type_PNM verification_type_image(FILE*  fichier);
+int verification_type_image(Type_PNM *type, FILE*  fichier);
 
 /**
  * verification_extension_fichier

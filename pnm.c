@@ -44,7 +44,7 @@ struct PNM_t {
 
 
 int load_pnm(PNM **image, char* filename) {
-   int type_image;
+   Type_PNM type_image;
    Dimension_pixel dimension;
 
 
@@ -57,8 +57,7 @@ int load_pnm(PNM **image, char* filename) {
    if (fichier==NULL)
       return -2;
 
-   type_image = verification_type_image(fichier);
-   if (type_image==-1)
+   if (verification_type_image(&type_image, fichier)==-1)
       return -3;
    if (verification_extension_fichier(type_image, filename)==-1)
       return -2;
@@ -96,8 +95,7 @@ int enregistrement_dimension_image(Dimension_pixel *dimension, FILE *fichier){
    return 0;
 }
 
-
-Type_PNM verification_type_image(FILE*  fichier){
+int verification_type_image(Type_PNM *type, FILE*  fichier){
 
    unsigned int numero_ligne = 0;
    char contenu_fichier[100];
@@ -113,12 +111,18 @@ Type_PNM verification_type_image(FILE*  fichier){
          numero_ligne++;
          if (contenu_fichier[0]!='P')
             return -1;
-         if (contenu_fichier[1]=='1')
-            return PBM;
-         else if (contenu_fichier[1]=='2')
-            return PGM;
-         else if (contenu_fichier[1]=='3')
-            return PPM;
+         if (contenu_fichier[1]=='1'){
+            *type =  PBM;
+            return 0;
+         }
+         else if (contenu_fichier[1]=='2'){
+            *type = PGM;
+            return 0;
+         }
+         else if (contenu_fichier[1]=='3'){
+            *type = PPM;
+            return 0;
+         }
          else 
             return -1;
       }
@@ -150,7 +154,6 @@ int verification_extension_fichier(Type_PNM type_image, char *filename){
    }
    return -1;
 }
-
 
 char *Type_PNM_vers_chaine(Type_PNM image){
    switch (image){
