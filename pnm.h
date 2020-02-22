@@ -53,7 +53,9 @@ typedef struct Dimension_pixel_t Dimension_pixel;
  *    -3 Contenu du fichier malformé
  *
  */
-int load_pnm(PNM **image, char* filename);
+int load_pnm(PNM *image, char* filename);
+
+PNM *constructeur_image_PBM(Dimension_pixel dimensions, Type_PNM format, unsigned int valeur_max, FILE *fichier);
 
 /**
  * enregistrement_dimension_image
@@ -115,7 +117,7 @@ int verification_extension_fichier(Type_PNM type_image, char *filename);
  */
 char *Type_PNM_vers_chaine(Type_PNM type_image);
 
-/**
+/*
  * write_pnm
  *
  * Sauvegarde une image PNM dans un fichier.

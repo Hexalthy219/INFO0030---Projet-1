@@ -26,10 +26,10 @@ int main(int argc, char *argv[]) {
    *  
    */
    char *optstring = "h";
-   PNM **image;
+   PNM *image;
 
 
-   int retour_chargement = load_pnm(image, "exemples_images/antilope.ppm");
+   int retour_chargement = load_pnm(image, "exemples_images/washington.pbm");
    printf("retour chargement : %d\n", retour_chargement);
    
 

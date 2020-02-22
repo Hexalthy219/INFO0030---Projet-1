@@ -39,33 +39,80 @@ struct PNM_t {
    Type_PNM format;
    Dimension_pixel dimension;
    unsigned int valeur_max;
-   unsigned int **image;
+   unsigned int **valeurs_pixel;
 };
 
 
-int load_pnm(PNM **image, char* filename) {
+int load_pnm(PNM *image, char* filename) {
    Type_PNM type_image;
    Dimension_pixel dimension;
 
 
    if (filename==NULL)
       return -2;
-   //if (image==NULL)
-     // return -3;
 
    FILE* fichier = fopen(filename, "r");
    if (fichier==NULL)
       return -2;
 
+   //Vérifications format
    if (verification_type_image(&type_image, fichier)==-1)
       return -3;
    if (verification_extension_fichier(type_image, filename)==-1)
       return -2;
 
+   //enregistrement dimensions
    if(enregistrement_dimension_image(&dimension, fichier)==-1)
       return -3;
 
+   image = constructeur_image_PBM(dimension, type_image, 255, fichier);
+   if (image==NULL)
+      return -4;
+   printf("%u", image->dimension.nbr_colonne);
+
    return 0;
+}
+
+PNM *constructeur_image_PBM(Dimension_pixel dimensions, Type_PNM format, unsigned int valeur_max, FILE *fichier){
+   int i, j;
+   char *stockage_valeur_fichier[100];
+
+   PNM *image = malloc(sizeof(PNM));
+   if (image==NULL)
+      return NULL;
+
+   image->valeurs_pixel = malloc(dimensions.nbr_ligne * sizeof(unsigned int**));
+   for(i=0; i<dimensions.nbr_ligne; i++){
+      image->valeurs_pixel[i] = malloc(dimensions.nbr_colonne * sizeof(unsigned int));
+      if (image->valeurs_pixel[i]==NULL){
+         for(j = i; j>=0; j--)
+            free(image->valeurs_pixel[j]);
+         free(image->valeurs_pixel);
+         free(image);
+         i=dimensions.nbr_ligne;
+         return NULL;
+      }
+   }
+
+
+   for(i=0; i<dimensions.nbr_ligne; i++){
+      for (j=0; j<dimensions.nbr_colonne; j++){
+         fscanf(fichier, "%s", stockage_valeur_fichier);
+         if(stockage_valeur_fichier[0]!='#')
+            image->valeurs_pixel[i][j] = atoi(stockage_valeur_fichier);
+         else{
+            fscanf(fichier, "%*[^\n]");
+         }
+      }
+   }
+   
+   for(i=0; i<dimensions.nbr_ligne; i++){
+      for(j=0; j<dimensions.nbr_colonne; j++){
+         printf("%d ", image->valeurs_pixel[i][j]);
+      }
+      printf("\n");
+   }
+   return image;
 }
 
 int enregistrement_dimension_image(Dimension_pixel *dimension, FILE *fichier){
