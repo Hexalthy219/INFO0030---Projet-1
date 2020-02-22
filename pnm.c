@@ -17,41 +17,41 @@
 
 
 /**
- * Définition du type opaque PNM
- *
- */
-struct PNM_t {
-   char *nombre_magique;
-   Format_Image dimension;
-   unsigned int valeur_max;
-   unsigned int **image;
-};
-
-/**
  * Définition de l'énumération Type_PNM
  * 
  */
 enum Type_PNM_t{PBM, PGM, PPM};
 
 /**
- * Définition de la struct Format_Image
+ * Définition de la struct Dimension_pixel
  * 
  */
-struct Format_Image_t{
+struct Dimension_pixel_t{
    int nbr_ligne;
    int nbr_colonne;
+};
+
+/**
+ * Définition du type opaque PNM
+ *
+ */
+struct PNM_t {
+   Type_PNM format;
+   Dimension_pixel dimension;
+   unsigned int valeur_max;
+   unsigned int **image;
 };
 
 
 int load_pnm(PNM **image, char* filename) {
    int type_image;
-   Format_Image dimension;
+   Dimension_pixel dimension;
 
 
    if (filename==NULL)
       return -2;
-   if (image==NULL)
-      return -3;
+   //if (image==NULL)
+     // return -3;
 
    FILE* fichier = fopen(filename, "r");
    if (fichier==NULL)
@@ -63,13 +63,39 @@ int load_pnm(PNM **image, char* filename) {
    if (verification_extension_fichier(type_image, filename)==-1)
       return -2;
 
+   if(enregistrement_dimension_image(&dimension, fichier)==-1)
+      return -3;
 
    return 0;
 }
 
-int format_image(Format_Image dimension){
-
+int enregistrement_dimension_image(Dimension_pixel *dimension, FILE *fichier){
+   unsigned int n = 0;
+   char contenu_fichier[100];
+   int nbr_fscanf = 0; 
+   do{
+      if (contenu_fichier[0]=='#')
+         nbr_fscanf = fscanf(fichier, "%*[^\n]");
+      
+      nbr_fscanf = fscanf(fichier, "%s[^\n]", contenu_fichier);
+      if (contenu_fichier[0]!='#'){
+         n++;
+         if(n==1){
+            dimension->nbr_ligne = atoi(contenu_fichier);
+            if (dimension->nbr_ligne == 0)
+               return -1;
+         }
+         else if(n==2){
+            dimension->nbr_colonne = atoi(contenu_fichier);
+            if (dimension->nbr_colonne == 0)
+               return -1;
+         }
+      }
+   }while(nbr_fscanf>0 && n!=2);
+   
+   return 0;
 }
+
 
 Type_PNM verification_type_image(FILE*  fichier){
 

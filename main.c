@@ -30,7 +30,7 @@ int main(int argc, char *argv[]) {
 
 
    int retour_chargement = load_pnm(image, "exemples_images/antilope.ppm");
-   printf("retour chargement : %d", retour_chargement);
+   printf("retour chargement : %d\n", retour_chargement);
    
 
    return 0;

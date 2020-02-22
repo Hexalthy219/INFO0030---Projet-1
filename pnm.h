@@ -32,7 +32,7 @@ typedef enum Type_PNM_t Type_PNM;
  * Déclaration de la struct Format_Image
  * 
  */
-typedef struct Format_Image_t Format_Image;
+typedef struct Dimension_pixel_t Dimension_pixel;
 
 /**
  * load_pnm
@@ -55,7 +55,21 @@ typedef struct Format_Image_t Format_Image;
  */
 int load_pnm(PNM **image, char* filename);
 
-
+/**
+ * enregistrement_dimension_image
+ * 
+ * enregistre dans la variable dimension, les dimensions de l'image contenues dans fichier
+ * 
+ * @param Dimension_pixel un pointeur sur Dimension_pixel auquel écrire les dimensions
+ *                        de l'image PNM
+ * @param fichier un pointeur sur FILE permettant d'en lire le contenu
+ * 
+ * @return:
+ *       0 dimensions enregistrées avec succès dans la variable dimension
+ *      -1 échec de la lecture des dimensions de l'image
+ * 
+ */
+int enregistrement_dimension_image(Dimension_pixel *dimension, FILE *fichier);
 
 /**
  * verification_type_image
