@@ -28,6 +28,11 @@ typedef struct PNM_t PNM;
  */
 typedef enum Type_PNM_t Type_PNM;
 
+/**
+ * Déclaration de la struct Format_Image
+ * 
+ */
+typedef struct Format_Image_t Format_Image;
 
 /**
  * load_pnm
@@ -48,7 +53,7 @@ typedef enum Type_PNM_t Type_PNM;
  *    -3 Contenu du fichier malformé
  *
  */
-int load_pnm(/*PNM **image,*/ char* filename);
+int load_pnm(PNM **image, char* filename);
 
 
 

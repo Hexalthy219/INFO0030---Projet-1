@@ -22,6 +22,7 @@
  */
 struct PNM_t {
    char *nombre_magique;
+   Format_Image dimension;
    unsigned int valeur_max;
    unsigned int **image;
 };
@@ -32,51 +33,65 @@ struct PNM_t {
  */
 enum Type_PNM_t{PBM, PGM, PPM};
 
+/**
+ * Définition de la struct Format_Image
+ * 
+ */
+struct Format_Image_t{
+   int nbr_ligne;
+   int nbr_colonne;
+};
 
-int load_pnm(/*PNM **image,*/ char* filename) {
+
+int load_pnm(PNM **image, char* filename) {
    int type_image;
+   Format_Image dimension;
 
 
    if (filename==NULL)
       return -2;
-   //if (image==NULL)
-   //   return -3;
+   if (image==NULL)
+      return -3;
 
    FILE* fichier = fopen(filename, "r");
    if (fichier==NULL)
-      return -3;
-
-   type_image = verification_type_image(fichier);
-   if (type_image==-1 || verification_extension_fichier(type_image, filename)==-1)
       return -2;
 
-   
+   type_image = verification_type_image(fichier);
+   if (type_image==-1)
+      return -3;
+   if (verification_extension_fichier(type_image, filename)==-1)
+      return -2;
+
 
    return 0;
 }
 
+int format_image(Format_Image dimension){
+
+}
 
 Type_PNM verification_type_image(FILE*  fichier){
 
    unsigned int numero_ligne = 0;
-   char type_image[100];
+   char contenu_fichier[100];
    int nbr_fscanf = 0;
 
    do{
-      if (type_image[0]=='#')
+      if (contenu_fichier[0]=='#')
          nbr_fscanf = fscanf(fichier, "%*[^\n]");
       
-      nbr_fscanf= fscanf(fichier, "%s[^\n]", type_image);
+      nbr_fscanf = fscanf(fichier, "%s[^\n]", contenu_fichier);
          
-      if (type_image[0]!='#'){
+      if (contenu_fichier[0]!='#'){
          numero_ligne++;
-         if (type_image[0]!='P')
+         if (contenu_fichier[0]!='P')
             return -1;
-         if (type_image[1]=='1')
+         if (contenu_fichier[1]=='1')
             return PBM;
-         else if (type_image[1]=='2')
+         else if (contenu_fichier[1]=='2')
             return PGM;
-         else if (type_image[1]=='3')
+         else if (contenu_fichier[1]=='3')
             return PPM;
          else 
             return -1;
