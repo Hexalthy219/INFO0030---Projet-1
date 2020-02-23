@@ -55,7 +55,35 @@ typedef struct Dimension_pixel_t Dimension_pixel;
  */
 int load_pnm(PNM *image, char* filename);
 
-PNM *constructeur_image_PBM(Dimension_pixel dimensions, Type_PNM format, unsigned int valeur_max, FILE *fichier);
+/**
+ * constructeur_image_PBM_PGM
+ * 
+ * @param dimensions
+ * @param format
+ * @param valeur_max
+ * @param fichier
+ * 
+ * @return:
+ *      NULL en cas d'erreur lors de l'allocation dynamique
+ *      image un pointeur sur PNM, si toutes les informations de l'image et le tableau d'entier représentant l'image
+ *              ont correctement été chargés dans image
+ * 
+ */ 
+PNM *constructeur_image_PBM_PGM(Dimension_pixel dimensions, Type_PNM format, unsigned int valeur_max, FILE *fichier);
+
+
+/**
+ * libere_image_PBM_PGM
+ * 
+ * @param image un pointeur sur PNM à libérer
+ * 
+ * @pre: image != NULL
+ * @post: image == NULL
+ * 
+ */ 
+void libere_image_PBM_PGM(PNM *image);
+
+int enregistrement_valeur_max(unsigned int *valeur_max, FILE  *fichier);
 
 /**
  * enregistrement_dimension_image
@@ -84,9 +112,9 @@ int enregistrement_dimension_image(Dimension_pixel *dimension, FILE *fichier);
  * @post: \
  * 
  * @return:
- *       PBM
- *       PGM
- *       PPM
+ *       PBM si numéro magique == "P1"
+ *       PGM si numéro magique == "P2"
+ *       PPM si numéro magique == "P3"
  *      -1  Numéro magique malformé / inexistant
  * 
  */
