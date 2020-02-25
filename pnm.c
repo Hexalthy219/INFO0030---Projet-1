@@ -20,7 +20,7 @@
  * Définition de l'énumération Type_PNM
  * 
  */
-enum Type_PNM_t{PBM, PGM, PPM};
+//enum Type_PNM_t{PBM, PGM, PPM};
 
 /**
  * Définition de la struct Dimension_pixel
@@ -39,7 +39,7 @@ struct PNM_t {
    Type_PNM format;
    Dimension_pixel dimension;
    unsigned int valeur_max;
-   unsigned int **valeurs_pixel;
+   unsigned int ***valeurs_pixel;
 };
 
 
@@ -73,32 +73,57 @@ int load_pnm(PNM *image, char* filename) {
    }
 
 
-   image = constructeur_image_PBM_PGM(dimension, type_image, valeur_max, fichier);
+   image = constructeur_PNM(dimension, type_image, valeur_max, fichier);
    if (image==NULL)
       return -1;
 
    return 0;
 }
 
-PNM *constructeur_image_PBM_PGM(Dimension_pixel dimensions, Type_PNM format, unsigned int valeur_max, FILE *fichier){
-   int i, j;
-   char *stockage_valeur_fichier[100];
+PNM *constructeur_PNM(Dimension_pixel dimensions, Type_PNM format, unsigned int valeur_max, FILE *fichier){
+   int i, j, x, nbr_valeur_ppm=0;
+   char stockage_valeur_fichier[100];
 
    PNM *image = malloc(sizeof(PNM));
    if (image==NULL)
       return NULL;
 
-   image->valeurs_pixel = malloc(dimensions.nbr_ligne * sizeof(unsigned int**));
+   image->valeurs_pixel = malloc(dimensions.nbr_ligne * sizeof(unsigned int***));
    for(i=0; i<dimensions.nbr_ligne; i++){
-      image->valeurs_pixel[i] = malloc(dimensions.nbr_colonne * sizeof(unsigned int));
+      image->valeurs_pixel[i] = malloc(dimensions.nbr_colonne * sizeof(unsigned int*));
       if (image->valeurs_pixel[i]==NULL){
-         for(j = i; j>=0; j--)
+         for(j = i-1; j>=0; j--){
+            for(x=0; x<dimensions.nbr_colonne; x++)
+               free(image->valeurs_pixel[j][x]);
             free(image->valeurs_pixel[j]);
+         }
          free(image->valeurs_pixel);
          free(image);
          i=dimensions.nbr_ligne;
          return NULL;
       }
+      else{
+         for(j=0; j<dimensions.nbr_colonne; j++){
+            if(image->format==PPM)
+               image->valeurs_pixel[i][j] = malloc(3 * sizeof(unsigned int));
+            else
+               image->valeurs_pixel[i][j] = malloc(sizeof(unsigned int));
+            if(image->valeurs_pixel[i][j]==NULL){
+               for(x = j-1; x>=0; x--)
+                  free(image->valeurs_pixel[i][x]);
+               for(j = i-1; j>=0; j--){
+                  for(x=0; x<dimensions.nbr_colonne; x++)
+                     free(image->valeurs_pixel[j][x]);
+                  free(image->valeurs_pixel[j]);
+               }
+               free(image->valeurs_pixel);
+            free(image);
+            i=dimensions.nbr_ligne;
+            return NULL;
+            }
+         }
+      }
+
    }
 
 
@@ -111,25 +136,55 @@ PNM *constructeur_image_PBM_PGM(Dimension_pixel dimensions, Type_PNM format, uns
    else
       image->valeur_max = valeur_max;
 
-   for(i=0; i<dimensions.nbr_ligne; i++){
-      for (j=0; j<dimensions.nbr_colonne; j++){
-         fscanf(fichier, "%s", stockage_valeur_fichier);
-         if(stockage_valeur_fichier[0]!='#'){
-            image->valeurs_pixel[i][j] = atoi(stockage_valeur_fichier);
-            if(atoi(stockage_valeur_fichier) > image->valeur_max){
-               libere_image_PBM_PGM(image);
-               return NULL;
+   if(image->format==PBM || image->format==PGM){
+      for(i=0; i<dimensions.nbr_ligne; i++){
+         for (j=0; j<dimensions.nbr_colonne;){
+            fscanf(fichier, "%s", stockage_valeur_fichier);
+            if(stockage_valeur_fichier[0]!='#'){
+               image->valeurs_pixel[i][j][0] = atoi(stockage_valeur_fichier);
+               if(atoi(stockage_valeur_fichier) > (int)image->valeur_max){
+                  libere_PNM(image);
+                  return NULL;
+               }
+               j++;
             }
+            else
+               fscanf(fichier, "%*[^\n]");
          }
-         else
-            fscanf(fichier, "%*[^\n]");
       }
+   }
+   else{
+      for(i=0; i<dimensions.nbr_ligne; i++){
+               for (j=0; j<dimensions.nbr_colonne;){
+                  fscanf(fichier, "%s", stockage_valeur_fichier);
+                  if(stockage_valeur_fichier[0]!='#'){
+                     image->valeurs_pixel[i][j][nbr_valeur_ppm] = atoi(stockage_valeur_fichier);
+                     if(atoi(stockage_valeur_fichier) > (int)image->valeur_max){
+                        libere_PNM(image);
+                        return NULL;
+                     }
+                     if(nbr_valeur_ppm==2)
+                        j++;
+                     nbr_valeur_ppm++;
+                     nbr_valeur_ppm%=3;
+                  }
+                  else
+                     fscanf(fichier, "%*[^\n]");
+               }
+            }
+   }
+   for(i=0; i<=10; i++){
+      for(j=0; j<image->dimension.nbr_colonne; j++){
+         for(x=0; x<3; x++)
+            printf("%u ", image->valeurs_pixel[i][j][x]);
+      }
+      printf("\n");
    }
 
    return image;
 }
 
-void libere_image_PBM_PGM(PNM *image){
+void libere_PNM(PNM *image){
    if(image==NULL)
       return;
    for(int i=0; i<image->dimension.nbr_ligne; i++)

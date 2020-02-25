@@ -26,7 +26,8 @@ typedef struct PNM_t PNM;
  * Déclaration de l'énumération reprenenat les différents type de fichier PNM
  * 
  */
-typedef enum Type_PNM_t Type_PNM;
+//typedef enum Type_PNM_t Type_PNM;
+typedef enum {PBM, PGM, PPM}Type_PNM;
 
 /**
  * Déclaration de la struct Format_Image
@@ -69,7 +70,7 @@ int load_pnm(PNM *image, char* filename);
  *              ont correctement été chargés dans image
  * 
  */ 
-PNM *constructeur_image_PBM_PGM(Dimension_pixel dimensions, Type_PNM format, unsigned int valeur_max, FILE *fichier);
+PNM *constructeur_PNM(Dimension_pixel dimensions, Type_PNM format, unsigned int valeur_max, FILE *fichier);
 
 
 /**
@@ -81,7 +82,7 @@ PNM *constructeur_image_PBM_PGM(Dimension_pixel dimensions, Type_PNM format, uns
  * @post: image == NULL
  * 
  */ 
-void libere_image_PBM_PGM(PNM *image);
+void libere_PNM(PNM *image);
 
 int enregistrement_valeur_max(unsigned int *valeur_max, FILE  *fichier);
 

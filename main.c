@@ -29,7 +29,7 @@ int main(int argc, char *argv[]) {
    PNM *image;
 
 
-   int retour_chargement = load_pnm(image, "exemples_images/monalisa.pgm");
+   int retour_chargement = load_pnm(image, "exemples_images/arcenciel.ppm");
    printf("retour chargement : %d\n", retour_chargement);
    
 
