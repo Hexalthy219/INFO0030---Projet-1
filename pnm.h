@@ -54,7 +54,7 @@ typedef struct Dimension_pixel_t Dimension_pixel;
  *    -3 Contenu du fichier malformé
  *
  */
-int load_pnm(PNM *image, char* filename);
+int load_pnm(PNM **image, char* filename);
 
 /**
  * constructeur_image_PBM_PGM
@@ -71,6 +71,8 @@ int load_pnm(PNM *image, char* filename);
  * 
  */ 
 PNM *constructeur_PNM(Dimension_pixel dimensions, Type_PNM format, unsigned int valeur_max, FILE *fichier);
+
+void test_affichage(PNM *image);
 
 
 /**

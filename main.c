@@ -23,13 +23,27 @@ int main(int argc, char *argv[]) {
 
    /* options :
    *  -h -> help
-   *  
+   *  -f 
    */
-   char *optstring = "h";
+   char *optstring = "hf:";
+   int val;
    PNM *image;
+   char *filename;
+   char *format;
 
+   while((val=getopt(argc, argv, optstring))!=EOF){
+      switch(val){
+         case'h':
+            printf("help\n");break;
+         case 'f':
+            filename = optarg;break;
+      }
+   }
 
-   int retour_chargement = load_pnm(image, "exemples_images/arcenciel.ppm");
+   printf("%s\n",filename);
+
+   int retour_chargement = load_pnm(&image, filename);//exemples_images/arcenciel.ppm
+   // test_affichage(image);
    printf("retour chargement : %d\n", retour_chargement);
    
 

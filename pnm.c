@@ -43,7 +43,7 @@ struct PNM_t {
 };
 
 
-int load_pnm(PNM *image, char* filename) {
+int load_pnm(PNM **image, char* filename) {
    Type_PNM type_image;
    Dimension_pixel dimension;
    unsigned int valeur_max;
@@ -73,8 +73,8 @@ int load_pnm(PNM *image, char* filename) {
    }
 
 
-   image = constructeur_PNM(dimension, type_image, valeur_max, fichier);
-   if (image==NULL)
+   *image = constructeur_PNM(dimension, type_image, valeur_max, fichier);
+   if (*image==NULL)
       return -1;
 
    return 0;
@@ -155,33 +155,36 @@ PNM *constructeur_PNM(Dimension_pixel dimensions, Type_PNM format, unsigned int 
    }
    else{
       for(i=0; i<dimensions.nbr_ligne; i++){
-               for (j=0; j<dimensions.nbr_colonne;){
-                  fscanf(fichier, "%s", stockage_valeur_fichier);
-                  if(stockage_valeur_fichier[0]!='#'){
-                     image->valeurs_pixel[i][j][nbr_valeur_ppm] = atoi(stockage_valeur_fichier);
-                     if(atoi(stockage_valeur_fichier) > (int)image->valeur_max){
-                        libere_PNM(image);
-                        return NULL;
-                     }
-                     if(nbr_valeur_ppm==2)
-                        j++;
-                     nbr_valeur_ppm++;
-                     nbr_valeur_ppm%=3;
-                  }
-                  else
-                     fscanf(fichier, "%*[^\n]");
+         for (j=0; j<dimensions.nbr_colonne;){
+            fscanf(fichier, "%s", stockage_valeur_fichier);
+            if(stockage_valeur_fichier[0]!='#'){
+               image->valeurs_pixel[i][j][nbr_valeur_ppm] = atoi(stockage_valeur_fichier);
+               if(atoi(stockage_valeur_fichier) > (int)image->valeur_max){
+                  libere_PNM(image);
+                  return NULL;
                }
+               if(nbr_valeur_ppm==2)
+                  j++;
+               nbr_valeur_ppm++;
+               nbr_valeur_ppm%=3;
             }
+            else
+               fscanf(fichier, "%*[^\n]");
+         }
+      }
    }
-   for(i=0; i<=10; i++){
-      for(j=0; j<image->dimension.nbr_colonne; j++){
-         for(x=0; x<3; x++)
+
+   return image;
+}
+
+void test_affichage(PNM *image){
+   for(int i=0; i<=10; i++){
+      for(int j=0; j<image->dimension.nbr_colonne; j++){
+         for(int x=0; x<3; x++)
             printf("%u ", image->valeurs_pixel[i][j][x]);
       }
       printf("\n");
    }
-
-   return image;
 }
 
 void libere_PNM(PNM *image){
