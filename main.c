@@ -5,7 +5,7 @@
  * de fichiers pnm.
  *
  * @author: Russe Cyril s170220
- * @date: 20-02-2020
+ * @date: 27-02-2020
  * @projet: INFO0030 Projet 1
  */
 
@@ -47,6 +47,7 @@ int main(int argc, char *argv[]) {
    retour_chargement = write_pnm(image, "test.pbm");
    printf("retour chargement : %d\n", retour_chargement);
 
+   libere_PNM(image);
    return 0;
 }
 

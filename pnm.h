@@ -5,7 +5,7 @@
  * des fonctions pour la manipulation d'images PNM.
  * 
  * @author: Russe Cyril s170220
- * @date: 20-02-2020
+ * @date: 27-02-2020
  * @projet: INFO0030 Projet 1
  */
 
@@ -76,6 +76,8 @@ PNM *constructeur_PNM(Dimension_pixel dimensions, Type_PNM format, unsigned int 
 /**
  * libere_image_PBM_PGM
  * 
+ * free tous les pointeurs de l'image donnée en argument et free image si image!=NULL
+ * 
  * @param image un pointeur sur PNM à libérer
  * 
  * @pre: image != NULL
@@ -84,6 +86,19 @@ PNM *constructeur_PNM(Dimension_pixel dimensions, Type_PNM format, unsigned int 
  */ 
 void libere_PNM(PNM *image);
 
+/**
+ * enregistrement_valeur_max
+ * 
+ * enregistre dans la variable que pointe valeur_max, la valeur max de l'image si est du format PGM ou PPM
+ * 
+ * @param valeur_max un pointeur sur unsigned int valeur_max
+ * 
+ * @param fichier un pointeur vers FILE, le fichier dans lequel lire la valeur_max
+ * 
+ * @return:
+ *       0 valeur_max correctement enregistrée
+ *      -1 échec de la lecture de la valeur_max
+ */
 int enregistrement_valeur_max(unsigned int *valeur_max, FILE  *fichier);
 
 /**

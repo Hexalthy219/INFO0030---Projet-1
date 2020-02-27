@@ -5,7 +5,7 @@
  * les fonctions de manipulation d'images PNM.
  * 
  * @author: Russe Cyril s170220
- * @date: 20-02-2020
+ * @date: 27-02-2020
  * @projet: INFO0030 Projet 1
  */
 
@@ -304,8 +304,6 @@ char *Type_PNM_vers_chaine(Type_PNM image){
       default:    return "inconnu";
    }
 }
-
-
 
 int write_pnm(PNM *image, char* filename) {
    FILE *fichier;
