@@ -173,18 +173,9 @@ PNM *constructeur_PNM(Dimension_pixel dimensions, Type_PNM format, unsigned int 
          }
       }
    }
+   fclose(fichier);
 
    return image;
-}
-
-void test_affichage(PNM *image){
-   for(int i=0; i<=10; i++){
-      for(int j=0; j<image->dimension.nbr_colonne; j++){
-         for(int x=0; x<3; x++)
-            printf("%u ", image->valeurs_pixel[i][j][x]);
-      }
-      printf("\n");
-   }
 }
 
 void libere_PNM(PNM *image){
@@ -314,10 +305,91 @@ char *Type_PNM_vers_chaine(Type_PNM image){
    }
 }
 
+
+
 int write_pnm(PNM *image, char* filename) {
+   FILE *fichier;
 
-   /* Insérez le code ici */
+   if(image==NULL)
+      return -2;
 
+   if(verification_extension_fichier(image->format, filename)==-1)
+      return -1;
+   
+   if(verification_char_interdit_filename(filename)==-1)
+      return -1;
+
+   fichier = fopen(filename, "w");
+   if (fichier==NULL)
+      return -2;
+   
+   if(ecriture_en_tete_PNM(image, fichier)==-1){
+      fclose(fichier);
+      return -2;
+   }
+
+   if(ecriture_image(image, fichier)==-1){
+      fclose(fichier);
+      return -2;
+   }
+   
+   
+   fclose(fichier);
+   
    return 0;
 }
+
+int ecriture_image(PNM *image, FILE *fichier){
+    for(int i=0; i<image->dimension.nbr_ligne; i++){
+      for(int j=0; j<image->dimension.nbr_colonne; j++){
+         if(image->format==PPM){
+            for(int x=0; x<3; x++)
+               fprintf(fichier, "%u ", image->valeurs_pixel[i][j][x]);
+         }
+         else
+            fprintf(fichier, "%u", image->valeurs_pixel[i][j][0]);
+      }
+      fprintf(fichier, "\n");
+   }
+   return 0;
+}
+
+int verification_char_interdit_filename(char *filename){
+   char caractere=1;
+   int i=0;
+   while(caractere!='\0'){
+      caractere=filename[i];
+      if(caractere=='/' || caractere==92 || caractere==':' || caractere=='*' || caractere=='?' || caractere=='"' || caractere=='<' || caractere=='>' || caractere=='|')
+         return -1;
+      i++;
+   }
+   return 0;
+}
+
+int ecriture_en_tete_PNM(PNM *image, FILE *fichier){
+   switch (image->format)
+   {
+   case PBM:
+      fprintf(fichier, "P1\n");
+      break;
+   case PGM:
+      fprintf(fichier, "P2\n");
+      break;
+   case PPM:
+      fprintf(fichier, "P3\n");
+      break;
+   default:
+      return -1;
+   }
+
+   fprintf(fichier, "%d %d\n", image->dimension.nbr_ligne, image->dimension.nbr_colonne);
+
+   if(image->format!=PBM)
+      fprintf(fichier, "%d\n", image->valeur_max);
+
+   return 0;
+
+}
+
+
 

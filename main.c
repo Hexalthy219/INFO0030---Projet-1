@@ -28,8 +28,7 @@ int main(int argc, char *argv[]) {
    char *optstring = "hf:";
    int val;
    PNM *image;
-   char *filename;
-   char *format;
+   char *filename, *format;
 
    while((val=getopt(argc, argv, optstring))!=EOF){
       switch(val){
@@ -43,9 +42,10 @@ int main(int argc, char *argv[]) {
    printf("%s\n",filename);
 
    int retour_chargement = load_pnm(&image, filename);//exemples_images/arcenciel.ppm
-   // test_affichage(image);
    printf("retour chargement : %d\n", retour_chargement);
-   
+
+   retour_chargement = write_pnm(image, "test.pbm");
+   printf("retour chargement : %d\n", retour_chargement);
 
    return 0;
 }

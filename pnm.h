@@ -72,8 +72,6 @@ int load_pnm(PNM **image, char* filename);
  */ 
 PNM *constructeur_PNM(Dimension_pixel dimensions, Type_PNM format, unsigned int valeur_max, FILE *fichier);
 
-void test_affichage(PNM *image);
-
 
 /**
  * libere_image_PBM_PGM
@@ -166,6 +164,12 @@ char *Type_PNM_vers_chaine(Type_PNM type_image);
  *
  */
 int write_pnm(PNM *image, char* filename);
+
+int ecriture_image(PNM *image, FILE *fichier);
+
+int ecriture_en_tete_PNM(PNM *image, FILE *fichier);
+
+int verification_char_interdit_filename(char *filename);
 
 #endif // __PNM__
 
