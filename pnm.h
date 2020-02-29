@@ -84,7 +84,7 @@ PNM *constructeur_PNM(Dimension_pixel dimensions, Type_PNM format, unsigned int 
  * @post: image == NULL
  * 
  */ 
-void libere_PNM(PNM *image);
+void libere_PNM(PNM **image);
 
 /**
  * enregistrement_valeur_max
@@ -149,7 +149,7 @@ int verification_type_image(Type_PNM *type, FILE*  fichier);
  *      -1 échec de la vérification
  * 
  */ 
-int verification_extension_fichier(Type_PNM type_image, char *filename);
+int verification_extension_fichier(Type_PNM type_image, char *filename, Type_PNM *extension_fichier);
 
 /**
  * Type_PNM_vers_chaine
@@ -160,6 +160,8 @@ int verification_extension_fichier(Type_PNM type_image, char *filename);
  * 
  */
 char *Type_PNM_vers_chaine(Type_PNM type_image);
+
+int chaine_vers_Type_PNM(char *chaine, Type_PNM *type_image);
 
 /*
  * write_pnm
@@ -185,6 +187,8 @@ int ecriture_image(PNM *image, FILE *fichier);
 int ecriture_en_tete_PNM(PNM *image, FILE *fichier);
 
 int verification_char_interdit_filename(char *filename);
+
+void ecriture_extension_fichier(char *filename, PNM *image);
 
 #endif // __PNM__
 

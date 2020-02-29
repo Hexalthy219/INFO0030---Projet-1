@@ -15,13 +15,6 @@
 
 #include "pnm.h"
 
-
-/**
- * Définition de l'énumération Type_PNM
- * 
- */
-//enum Type_PNM_t{PBM, PGM, PPM};
-
 /**
  * Définition de la struct Dimension_pixel
  * 
@@ -44,38 +37,51 @@ struct PNM_t {
 
 
 int load_pnm(PNM **image, char* filename) {
-   Type_PNM type_image;
+   Type_PNM type_image, extension_fichier;
    Dimension_pixel dimension;
    unsigned int valeur_max;
 
 
-   if (filename==NULL)
+   if (filename==NULL){
+      printf("Veuillez entrer un nom de fichier.\n");
       return -2;
+   }
 
    FILE* fichier = fopen(filename, "r");
-   if (fichier==NULL)
+   if (fichier==NULL){
+      printf("Impossible d'ouvrir le fichier %s.\n", filename);
       return -2;
+   }
 
    //Vérifications format
-   if (verification_type_image(&type_image, fichier)==-1)
+   if (verification_type_image(&type_image, fichier)==-1){
+      printf("L'en tête de l'image est malformé.\n");
       return -3;
-   if (verification_extension_fichier(type_image, filename)==-1)
+   }
+   if (verification_extension_fichier(type_image, filename, &extension_fichier)==-1){
+      printf("Extension de %s ne correspond pas au type de l'en tête. L'extension est du type %s et non %s.\n", filename, Type_PNM_vers_chaine(extension_fichier), Type_PNM_vers_chaine(type_image));
       return -2;
-
+   }
    //enregistrement dimensions
-   if(enregistrement_dimension_image(&dimension, fichier)==-1)
+   if(enregistrement_dimension_image(&dimension, fichier)==-1){
+      printf("En tête de fichier mal formée. Impossible de lire les dimensions.\n");
       return -3;
+   }
 
    //enregistrement valeur max
    if(type_image==PGM || type_image==PPM){
-      if(enregistrement_valeur_max(&valeur_max, fichier)==-1)
+      if(enregistrement_valeur_max(&valeur_max, fichier)==-1){
+         printf("En tête de fichier mal formée. Impossible de lire la valeur max.\n");
          return -3;
+      }
    }
 
 
    *image = constructeur_PNM(dimension, type_image, valeur_max, fichier);
-   if (*image==NULL)
+   if (*image==NULL){
+      printf("Allocation de mémoire impossible.\n");
       return -1;
+   }
 
    return 0;
 }
@@ -150,7 +156,7 @@ PNM *constructeur_PNM(Dimension_pixel dimensions, Type_PNM format, unsigned int 
             if(stockage_valeur_fichier[0]!='#'){
                image->valeurs_pixel[i][j][0] = atoi(stockage_valeur_fichier);
                if(atoi(stockage_valeur_fichier) > (int)image->valeur_max){
-                  libere_PNM(image);
+                  libere_PNM(&image);
                   return NULL;
                }
                j++;
@@ -167,7 +173,7 @@ PNM *constructeur_PNM(Dimension_pixel dimensions, Type_PNM format, unsigned int 
             if(stockage_valeur_fichier[0]!='#'){
                image->valeurs_pixel[i][j][nbr_valeur_ppm] = atoi(stockage_valeur_fichier);
                if(atoi(stockage_valeur_fichier) > (int)image->valeur_max){
-                  libere_PNM(image);
+                  libere_PNM(&image);
                   return NULL;
                }
                if(nbr_valeur_ppm==2)
@@ -185,16 +191,17 @@ PNM *constructeur_PNM(Dimension_pixel dimensions, Type_PNM format, unsigned int 
    return image;
 }
 
-void libere_PNM(PNM *image){
-   if(image==NULL)
-      return;
-   for(int i=0; i<image->dimension.nbr_ligne; i++){
-      for(int j=0; j<image->dimension.nbr_colonne; j++)
-         free(image->valeurs_pixel[i][j]);
-      free(image->valeurs_pixel[i]);
+void libere_PNM(PNM **image){
+   if(*image!=NULL)
+   {
+      for(int i=0; i<(*image)->dimension.nbr_ligne; i++){
+         for(int j=0; j<(*image)->dimension.nbr_colonne; j++)
+            free((*image)->valeurs_pixel[i][j]);
+         free((*image)->valeurs_pixel[i]);
+      }
+      free((*image)->valeurs_pixel);
+      free(*image);
    }
-   free(image->valeurs_pixel);
-   free(image);
 }
 
 int enregistrement_valeur_max(unsigned int *valeur_max, FILE  *fichier){
@@ -282,7 +289,9 @@ int verification_type_image(Type_PNM *type, FILE*  fichier){
    return -1;
 }
 
-int verification_extension_fichier(Type_PNM type_image, char *filename){
+int verification_extension_fichier(Type_PNM type_image, char *filename, Type_PNM *extension_fichier){
+   if(filename==NULL)
+      return -1;
    int taille_nom=0;
 
    while(filename[taille_nom]!='\0')
@@ -290,16 +299,22 @@ int verification_extension_fichier(Type_PNM type_image, char *filename){
 
    switch (type_image){
       case PBM: 
-         if (filename[taille_nom-4]=='.' && filename[taille_nom-3]=='p' && filename[taille_nom-2]=='b' && filename[taille_nom-1]=='m')
+         if (filename[taille_nom-4]=='.' && filename[taille_nom-3]=='p' && filename[taille_nom-2]=='b' && filename[taille_nom-1]=='m'){
+            *extension_fichier=PBM;
             return 0;
+         }
          break;
       case PGM:
-         if (filename[taille_nom-4]=='.' && filename[taille_nom-3]=='p' && filename[taille_nom-2]=='g' && filename[taille_nom-1]=='m')
+         if (filename[taille_nom-4]=='.' && filename[taille_nom-3]=='p' && filename[taille_nom-2]=='g' && filename[taille_nom-1]=='m'){
+            *extension_fichier=PGM;
             return 0;
+         }
          break;
       case PPM:
-         if (filename[taille_nom-4]=='.' && filename[taille_nom-3]=='p' && filename[taille_nom-2]=='p' && filename[taille_nom-1]=='m')
+         if (filename[taille_nom-4]=='.' && filename[taille_nom-3]=='p' && filename[taille_nom-2]=='p' && filename[taille_nom-1]=='m'){
+            *extension_fichier=PPM;
             return 0;
+         }
          break;
       default: return -1;
    }
@@ -315,32 +330,45 @@ char *Type_PNM_vers_chaine(Type_PNM image){
    }
 }
 
+int chaine_vers_Type_PNM(char *chaine, Type_PNM *type_image){
+   int taille=0;
+   while(chaine[taille]!='\0')
+      taille++;
+   if(taille!=3)
+      return -1;
+   if(chaine[0]=='P' && chaine[1]=='B' && chaine[2]=='M')
+      *type_image = PBM;
+   else if(chaine[0]=='P' && chaine[1]=='G' && chaine[2]=='M')
+      *type_image = PGM;
+   else if(chaine[0]=='P' && chaine[1]=='P' && chaine[2]=='M')
+      *type_image = PPM;
+   else
+      return -1;
+   return 0;
+}
+
 int write_pnm(PNM *image, char* filename) {
    FILE *fichier;
-
+   Type_PNM extension_fichier;
    if(image==NULL)
       return -2;
 
-   if(verification_extension_fichier(image->format, filename)==-1)
+
+   if(verification_extension_fichier(image->format, filename, &extension_fichier)==-1)
       return -1;
-   
    if(verification_char_interdit_filename(filename)==-1)
       return -1;
-
    fichier = fopen(filename, "w");
    if (fichier==NULL)
       return -2;
-   
    if(ecriture_en_tete_PNM(image, fichier)==-1){
       fclose(fichier);
       return -2;
    }
-
    if(ecriture_image(image, fichier)==-1){
       fclose(fichier);
       return -2;
    }
-   
    
    fclose(fichier);
    
@@ -399,5 +427,23 @@ int ecriture_en_tete_PNM(PNM *image, FILE *fichier){
 
 }
 
+void ecriture_extension_fichier(char *filename, PNM *image){
+   int taille=0;
+   while(filename[taille]!='\0')
+      taille++;
 
+   switch (image->format){
+      case PBM:
+         filename[taille-2]=98;
+         break;
+      case PGM:
+         filename[taille-2]=103;
+         break;
+      case PPM:
+         filename[taille-2]=112;
+         break;
+      default:
+         break;
+   }
+}
 
