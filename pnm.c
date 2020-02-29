@@ -81,25 +81,30 @@ int load_pnm(PNM **image, char* filename) {
 }
 
 PNM *constructeur_PNM(Dimension_pixel dimensions, Type_PNM format, unsigned int valeur_max, FILE *fichier){
-   int i, j, x, nbr_valeur_ppm=0;
+   int i, j, nbr_valeur_ppm=0;
    char stockage_valeur_fichier[100];
 
+   //malloc la matrice et chaque élément de celle-ci
    PNM *image = malloc(sizeof(PNM));
    if (image==NULL)
       return NULL;
 
-   image->valeurs_pixel = malloc(dimensions.nbr_ligne * sizeof(unsigned int***));
+   image->valeurs_pixel = malloc(dimensions.nbr_ligne * sizeof(unsigned int**));
+   if(image->valeurs_pixel==NULL){
+      free(image);
+      return NULL;
+   }
+
    for(i=0; i<dimensions.nbr_ligne; i++){
       image->valeurs_pixel[i] = malloc(dimensions.nbr_colonne * sizeof(unsigned int*));
       if (image->valeurs_pixel[i]==NULL){
-         for(j = i-1; j>=0; j--){
-            for(x=0; x<dimensions.nbr_colonne; x++)
-               free(image->valeurs_pixel[j][x]);
-            free(image->valeurs_pixel[j]);
+         for(i--; i>=0; i--){//free reste du tableau avant la ligne n'ayant pu être malloc
+            for(j=0; j<dimensions.nbr_colonne; j++)
+               free(image->valeurs_pixel[i][j]);
+            free(image->valeurs_pixel[i]);
          }
          free(image->valeurs_pixel);
          free(image);
-         i=dimensions.nbr_ligne;
          return NULL;
       }
       else{
@@ -108,17 +113,19 @@ PNM *constructeur_PNM(Dimension_pixel dimensions, Type_PNM format, unsigned int 
                image->valeurs_pixel[i][j] = malloc(3 * sizeof(unsigned int));
             else
                image->valeurs_pixel[i][j] = malloc(sizeof(unsigned int));
+
             if(image->valeurs_pixel[i][j]==NULL){
-               for(x = j-1; x>=0; x--)
-                  free(image->valeurs_pixel[i][x]);
-               for(j = i-1; j>=0; j--){
-                  for(x=0; x<dimensions.nbr_colonne; x++)
-                     free(image->valeurs_pixel[j][x]);
-                  free(image->valeurs_pixel[j]);
+               for(j--; j>=0; j--)//free éléments de la colonne avant l'élément n'ayant pu être malloc
+                  free(image->valeurs_pixel[i][j]);
+               free(image->valeurs_pixel[i]);
+
+               for(i--;i>=0; i--){//free reste du tableau avant la colonne dans laquelle un élément n'a pu être malloc
+                  for(j=0; j<dimensions.nbr_colonne; j++)
+                     free(image->valeurs_pixel[i][j]);
+                  free(image->valeurs_pixel[i]);
                }
-               free(image->valeurs_pixel);
+            free(image->valeurs_pixel);
             free(image);
-            i=dimensions.nbr_ligne;
             return NULL;
             }
          }
@@ -126,7 +133,7 @@ PNM *constructeur_PNM(Dimension_pixel dimensions, Type_PNM format, unsigned int 
 
    }
 
-
+   //initialisation des valeurs de l'image
 
    image->dimension.nbr_ligne = dimensions.nbr_ligne;
    image->dimension.nbr_colonne = dimensions.nbr_colonne;
@@ -181,8 +188,11 @@ PNM *constructeur_PNM(Dimension_pixel dimensions, Type_PNM format, unsigned int 
 void libere_PNM(PNM *image){
    if(image==NULL)
       return;
-   for(int i=0; i<image->dimension.nbr_ligne; i++)
+   for(int i=0; i<image->dimension.nbr_ligne; i++){
+      for(int j=0; j<image->dimension.nbr_colonne; j++)
+         free(image->valeurs_pixel[i][j]);
       free(image->valeurs_pixel[i]);
+   }
    free(image->valeurs_pixel);
    free(image);
 }
@@ -345,7 +355,7 @@ int ecriture_image(PNM *image, FILE *fichier){
                fprintf(fichier, "%u ", image->valeurs_pixel[i][j][x]);
          }
          else
-            fprintf(fichier, "%u", image->valeurs_pixel[i][j][0]);
+            fprintf(fichier, "%u ", image->valeurs_pixel[i][j][0]);
       }
       fprintf(fichier, "\n");
    }

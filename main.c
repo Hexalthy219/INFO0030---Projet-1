@@ -35,16 +35,19 @@ int main(int argc, char *argv[]) {
          case'h':
             printf("help\n");break;
          case 'f':
-            filename = optarg;break;
+            format = optarg;break;
+         default: return 0;
       }
    }
+   printf("%s\n", format);
+   filename = argv[argc-1];
 
    printf("%s\n",filename);
 
    int retour_chargement = load_pnm(&image, filename);//exemples_images/arcenciel.ppm
    printf("retour chargement : %d\n", retour_chargement);
 
-   retour_chargement = write_pnm(image, "test.pbm");
+   retour_chargement = write_pnm(image, "test.pgm");
    printf("retour chargement : %d\n", retour_chargement);
 
    libere_PNM(image);
