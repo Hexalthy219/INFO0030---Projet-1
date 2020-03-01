@@ -58,7 +58,7 @@ int main(int argc, char *argv[]) {
    }
 
    if((retour_verif_extension = verification_extension_fichier(format_PNM, filename, &extension_fichier))==-1){
-      printf("Mauvais format passé en argument. Le fichier %s est du type PGM et non %s.\n",filename, Type_PNM_vers_chaine(format_PNM));
+      printf("Mauvais format passé en argument. Le fichier %s est du type %s et non %s.\n", filename, Type_PNM_vers_chaine(extension_fichier), Type_PNM_vers_chaine(format_PNM));
       return -1;
    }
 
@@ -72,9 +72,8 @@ int main(int argc, char *argv[]) {
       retour_ecriture = write_pnm(image, nom_fichier_ecriture);
       if(retour_ecriture==0)
          printf("Image copiée dans le fichier %s.\n", nom_fichier_ecriture);
+      libere_PNM(&image);
    }
-  // if(image!=NULL)
-      //libere_PNM(&image);
 
    return 0;
 }

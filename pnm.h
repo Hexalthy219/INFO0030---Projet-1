@@ -72,7 +72,6 @@ int load_pnm(PNM **image, char* filename);
  */ 
 PNM *constructeur_PNM(Dimension_pixel dimensions, Type_PNM format, unsigned int valeur_max, FILE *fichier);
 
-
 /**
  * libere_image_PBM_PGM
  * 
@@ -161,9 +160,26 @@ int verification_extension_fichier(Type_PNM type_image, char *filename, Type_PNM
  */
 char *Type_PNM_vers_chaine(Type_PNM type_image);
 
+/**
+ * chaine_vers_Type_PNM
+ * 
+ * revoit un Type_PNM correspondant à la 
+ * 
+ * @param chaine un pointeur vers la chaine de caractère à laquelle vérifier de quel type de l'enum elle correspond
+ * 
+ * @param type_image pointeur vers Type_PNM dans lequel transmettre la valeur correspodnante à la chaine de caractère
+ * 
+ * @pre:/
+ * @post:/
+ * 
+ * @return:
+ *       0 la chaine de caractère correspond bien à un des type de Type_PNM
+ *      -1 la chaine de caractère ne correspond à aucun des types et n'a donc pas été donnée à type_image
+ *  
+ */
 int chaine_vers_Type_PNM(char *chaine, Type_PNM *type_image);
 
-/*
+/**
  * write_pnm
  *
  * Sauvegarde une image PNM dans un fichier.
@@ -175,19 +191,77 @@ int chaine_vers_Type_PNM(char *chaine, Type_PNM *type_image);
  * @post: le fichier filename contient l'image PNM image.
  *
  * @return:
- *     0 Succès
- *    -1 Nom du fichier malformé
- *    -2 Erreur lors de la manipulation du fichier
+ *     0    Succès
+ *    -1    Nom du fichier malformé
+ *    -2    Erreur lors de la manipulation du fichier
  *
  */
 int write_pnm(PNM *image, char* filename);
 
+/**
+ * ecriture_image
+ * 
+ * écrit les valeurs de image dans fichier
+ * 
+ * @param image un pointeur sur PNM qui contient les informations de l'iamge à retranscrire dans fichier
+ * 
+ * @param fichier un pointeur sur FILE, un fichier ouvert en mode "write" afin d'y retranscrire une image PNM
+ * 
+ * @pre:/
+ * @post:/
+ * 
+ * @return:
+ *   0  succès de l'écriture du fichier
+ * 
+ */
 int ecriture_image(PNM *image, FILE *fichier);
 
+/**
+ * ecriture_en_tete_PNM
+ * 
+ * écrit en en tete du fichier l'en tête: nombre magique, dimensions et valeurs max si c'est un fichier pgm ou ppm
+ * 
+ * @param image pointeur sur PNM structure contenant les informations nécessaires à la création de l'en tête 
+ * @param fichier pointeur sur FILE un fichier ouvert en mode "write" afin d'y écrire l'en tête
+ * 
+ * @pre:/
+ * @post:/
+ * 
+ * @return:
+ *       0  succès de l'écriture de l'en tête dans fichier
+ *      -1  échèc de l'écriture de l'en tête dans fichier car format format incorrect
+ * 
+ */
 int ecriture_en_tete_PNM(PNM *image, FILE *fichier);
 
+/**
+ * verification_char_interdit_filename
+ * 
+ * vérifie si le nom du fichier d'écriture ne contient pas de caractère interdit
+ * 
+ * @param filename pointeur sur une chaine de caractère contenant le nom du fichier à vérifier
+ * 
+ * @pre:/
+ * @post:/
+ * 
+ * @return:
+ *       0  le nom de fichier ne contient pas de caractère interdit
+ *      -1  le nom de fichier contient des caractères interdits
+ */
 int verification_char_interdit_filename(char *filename);
 
+/**
+ * ecriture_extension_fichier
+ * 
+ * modifie filename afin d'y ajouter le nom d'extension correspondant au format de image
+ * 
+ * @param filename pointeur sur une chaine de caractère contenant le nom de fichier à modifier
+ * @param image pointeur sur PNM, structure contenant toutes les informations de l'image à retranscrire
+ * 
+ * @pre:/
+ * @post:filename modifié afin qu'il se termine par "pbm", "pgm" ou "ppm" en fonctin du format image
+ * 
+ */
 void ecriture_extension_fichier(char *filename, PNM *image);
 
 #endif // __PNM__

@@ -32,7 +32,7 @@ struct PNM_t {
    Type_PNM format;
    Dimension_pixel dimension;
    unsigned int valeur_max;
-   unsigned int ***valeurs_pixel;
+   unsigned short ***valeurs_pixel;
 };
 
 
@@ -95,14 +95,14 @@ PNM *constructeur_PNM(Dimension_pixel dimensions, Type_PNM format, unsigned int 
    if (image==NULL)
       return NULL;
 
-   image->valeurs_pixel = malloc(dimensions.nbr_ligne * sizeof(unsigned int**));
+   image->valeurs_pixel = malloc(dimensions.nbr_ligne * sizeof(unsigned short**));
    if(image->valeurs_pixel==NULL){
       free(image);
       return NULL;
    }
 
    for(i=0; i<dimensions.nbr_ligne; i++){
-      image->valeurs_pixel[i] = malloc(dimensions.nbr_colonne * sizeof(unsigned int*));
+      image->valeurs_pixel[i] = malloc(dimensions.nbr_colonne * sizeof(unsigned short*));
       if (image->valeurs_pixel[i]==NULL){
          for(i--; i>=0; i--){//free reste du tableau avant la ligne n'ayant pu être malloc
             for(j=0; j<dimensions.nbr_colonne; j++)
@@ -116,9 +116,9 @@ PNM *constructeur_PNM(Dimension_pixel dimensions, Type_PNM format, unsigned int 
       else{
          for(j=0; j<dimensions.nbr_colonne; j++){
             if(image->format==PPM)
-               image->valeurs_pixel[i][j] = malloc(3 * sizeof(unsigned int));
+               image->valeurs_pixel[i][j] = malloc(3 * sizeof(unsigned short));
             else
-               image->valeurs_pixel[i][j] = malloc(sizeof(unsigned int));
+               image->valeurs_pixel[i][j] = malloc(sizeof(unsigned short));
 
             if(image->valeurs_pixel[i][j]==NULL){
                for(j--; j>=0; j--)//free éléments de la colonne avant l'élément n'ayant pu être malloc
@@ -301,6 +301,7 @@ int verification_extension_fichier(Type_PNM type_image, char *filename, Type_PNM
       case PBM: 
          if (filename[taille_nom-4]=='.' && filename[taille_nom-3]=='p' && filename[taille_nom-2]=='b' && filename[taille_nom-1]=='m'){
             *extension_fichier=PBM;
+            printf("%d", *extension_fichier);
             return 0;
          }
          break;
@@ -380,10 +381,10 @@ int ecriture_image(PNM *image, FILE *fichier){
       for(int j=0; j<image->dimension.nbr_colonne; j++){
          if(image->format==PPM){
             for(int x=0; x<3; x++)
-               fprintf(fichier, "%u ", image->valeurs_pixel[i][j][x]);
+               fprintf(fichier, "%hu ", image->valeurs_pixel[i][j][x]);
          }
          else
-            fprintf(fichier, "%u ", image->valeurs_pixel[i][j][0]);
+            fprintf(fichier, "%hu ", image->valeurs_pixel[i][j][0]);
       }
       fprintf(fichier, "\n");
    }
