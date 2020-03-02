@@ -5,7 +5,7 @@
  * les fonctions de manipulation d'images PNM.
  * 
  * @author: Russe Cyril s170220
- * @date: 27-02-2020
+ * @date: 01-03-2020
  * @projet: INFO0030 Projet 1
  */
 
@@ -59,7 +59,7 @@ int load_pnm(PNM **image, char* filename) {
       return -3;
    }
    if (verification_extension_fichier(type_image, filename, &extension_fichier)==-1){
-      printf("Extension de %s ne correspond pas au type de l'en tête. L'extension est du type %s et non %s.\n", filename, Type_PNM_vers_chaine(extension_fichier), Type_PNM_vers_chaine(type_image));
+      printf("L'extension de %s ne correspond pas au type de l'en tête. L'extension est du type %s et non %s.\n", filename, Type_PNM_vers_chaine(extension_fichier), Type_PNM_vers_chaine(type_image));
       return -2;
    }
    //enregistrement dimensions
@@ -297,36 +297,25 @@ int verification_extension_fichier(Type_PNM type_image, char *filename, Type_PNM
    while(filename[taille_nom]!='\0')
       taille_nom++;
 
-   switch (type_image){
-      case PBM: 
-         if (filename[taille_nom-4]=='.' && filename[taille_nom-3]=='p' && filename[taille_nom-2]=='b' && filename[taille_nom-1]=='m'){
-            *extension_fichier=PBM;
-            printf("%d", *extension_fichier);
-            return 0;
-         }
-         break;
-      case PGM:
-         if (filename[taille_nom-4]=='.' && filename[taille_nom-3]=='p' && filename[taille_nom-2]=='g' && filename[taille_nom-1]=='m'){
-            *extension_fichier=PGM;
-            return 0;
-         }
-         break;
-      case PPM:
-         if (filename[taille_nom-4]=='.' && filename[taille_nom-3]=='p' && filename[taille_nom-2]=='p' && filename[taille_nom-1]=='m'){
-            *extension_fichier=PPM;
-            return 0;
-         }
-         break;
-      default: return -1;
-   }
-   return -1;
+   if (filename[taille_nom-4]=='.' && filename[taille_nom-3]=='p' && filename[taille_nom-2]=='b' && filename[taille_nom-1]=='m')
+      *extension_fichier = PBM;
+   else if (filename[taille_nom-4]=='.' && filename[taille_nom-3]=='p' && filename[taille_nom-2]=='g' && filename[taille_nom-1]=='m')
+      *extension_fichier = PGM;
+   else if (filename[taille_nom-4]=='.' && filename[taille_nom-3]=='p' && filename[taille_nom-2]=='p' && filename[taille_nom-1]=='m')
+      *extension_fichier = PPM;
+
+   if(*extension_fichier == type_image)
+      return 0;
+   else
+      return -1;
+
 }
 
 char *Type_PNM_vers_chaine(Type_PNM image){
    switch (image){
-      case PBM:   return "PBM";
-      case PGM:   return "PGM";
-      case PPM:   return "PPM";
+      case 0:   return "PBM";
+      case 1:   return "PGM";
+      case 2:   return "PPM";
       default:    return "inconnu";
    }
 }
@@ -355,18 +344,26 @@ int write_pnm(PNM *image, char* filename) {
       return -2;
 
 
-   if(verification_extension_fichier(image->format, filename, &extension_fichier)==-1)
+   if(verification_extension_fichier(image->format, filename, &extension_fichier)==-1){
+      printf("L'extension du fichier dans lequel copier l'image ne correspond pas au format de celle-ci.\n");
       return -1;
-   if(verification_char_interdit_filename(filename)==-1)
+   }
+   if(verification_char_interdit_filename(filename)==-1){
+      printf("Impossible de copier l'image. Le nom contient des caractères interdits.\n");
       return -1;
+   }
    fichier = fopen(filename, "w");
-   if (fichier==NULL)
+   if (fichier==NULL){
+      printf("Impossible d'ouvrir le fichier afin d'y copier l'image.\n");
       return -2;
+   }
    if(ecriture_en_tete_PNM(image, fichier)==-1){
+      printf("Impossible d'écrire l'en tête.\n");
       fclose(fichier);
       return -2;
    }
    if(ecriture_image(image, fichier)==-1){
+      printf("Un problème est survenu lors de l'écriture de l'image.\n");
       fclose(fichier);
       return -2;
    }

@@ -5,7 +5,7 @@
  * des fonctions pour la manipulation d'images PNM.
  * 
  * @author: Russe Cyril s170220
- * @date: 27-02-2020
+ * @date: 01-03-2020
  * @projet: INFO0030 Projet 1
  */
 
@@ -26,7 +26,6 @@ typedef struct PNM_t PNM;
  * Déclaration de l'énumération reprenenat les différents type de fichier PNM
  * 
  */
-//typedef enum Type_PNM_t Type_PNM;
 typedef enum {PBM, PGM, PPM}Type_PNM;
 
 /**
@@ -62,7 +61,7 @@ int load_pnm(PNM **image, char* filename);
  * @param dimensions
  * @param format
  * @param valeur_max
- * @param fichier
+ * @param fichier 
  * 
  * @return:
  *      NULL en cas d'erreur lors de l'allocation dynamique
@@ -157,6 +156,9 @@ int verification_extension_fichier(Type_PNM type_image, char *filename, Type_PNM
  * 
  * @param type_image une variable de type Type_PNM
  * 
+ * @return:
+ *      la chaine de caractère correspondante si possible
+ *      "inconnu" sinon
  */
 char *Type_PNM_vers_chaine(Type_PNM type_image);
 

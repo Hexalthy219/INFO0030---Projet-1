@@ -5,7 +5,7 @@
  * de fichiers pnm.
  *
  * @author: Russe Cyril s170220
- * @date: 27-02-2020
+ * @date: 01-03-2020
  * @projet: INFO0030 Projet 1
  */
 
@@ -22,10 +22,9 @@
 int main(int argc, char *argv[]) {
 
    /* options :
-   *  -h -> help
-   *  -f 
+   *  -f <format> <fichier> -> permet de lancer le chargement de fichier et de la recopier dans le dossier de l'executable pnm
    */
-   char *optstring = "hf:";
+   char *optstring = "f:";
    PNM *image;
    Type_PNM format_PNM, extension_fichier;
    char *filename, *format;
@@ -33,8 +32,6 @@ int main(int argc, char *argv[]) {
 
    while((val=getopt(argc, argv, optstring))!=EOF){
       switch(val){
-         case'h':
-            printf("help\n");break;
          case 'f':
             format = optarg;
             filename = argv[argc-1];
