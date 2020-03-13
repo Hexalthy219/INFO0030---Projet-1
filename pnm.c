@@ -364,25 +364,28 @@ int write_pnm(PNM *image, char* filename) {
    if(image==NULL)
       return -2;
 
-
+   //vérifie que l'extension du nom donnée pour le fichier d'écriture correspond au format de l'image à écrire
    if(verifie_correspondance_extension_format(image->format, filename, &extension_fichier)==-1){
       printf("L'extension du fichier dans lequel copier l'image ne correspond pas au format de celle-ci.\n");
       return -1;
    }
+   //vérifie que le nom de fichier ne contient pas des caractères interdits
    if(verifie_validite_filename(filename)==-1){
       printf("Impossible de copier l'image. Le nom contient des caractères interdits.\n");
       return -1;
    }
-   fichier = fopen(filename, "w");
+   fichier = fopen(filename, "w");//ouvre le fichier d'écriture en mode "write"
    if (fichier==NULL){
       printf("Impossible d'ouvrir le fichier afin d'y copier l'image.\n");
       return -2;
    }
+   //écrit l'en tête du fichier 
    if(ecrit_en_tete_fichier_PNM(image, fichier)==-1){
       printf("Impossible d'écrire l'en tête.\n");
       fclose(fichier);
       return -2;
    }
+   //écrit les valeurs de chaque pixel dans le fichier
    if(ecrit_image_dans_fichier(image, fichier)==-1){
       printf("Un problème est survenu lors de l'écriture de l'image.\n");
       fclose(fichier);

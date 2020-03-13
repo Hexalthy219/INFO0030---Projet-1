@@ -22,27 +22,23 @@
 int main(int argc, char *argv[]) {
 
    /* options :
-   *  -f <format> <fichier> -> permet de lancer le chargement de fichier et de la recopier dans le dossier de l'executable pnm
+   *  -f <format> <fichier> -> permet de lancer le chargement de fichier et de le recopier dans le dossier de l'executable pnm sous le nom "test"
+   *     suivi de l'extension correspondante dans le répertoire de l'executable
    */
    char *optstring = "f:";
    PNM *image;
    Type_PNM format_PNM, extension_fichier;
    char *filename, *format;
-   int lancement_chargement = 0, retour_chargement, retour_ecriture, retour_verif_extension, val;
+   int retour_chargement, retour_ecriture, retour_verif_extension, val;
 
    while((val=getopt(argc, argv, optstring))!=EOF){
-      switch(val){
-         case 'f':
+      if(val=='f'){
             format = optarg;
             filename = argv[argc-1];
-            lancement_chargement = 1;
-            break;
-         default: return 0;
       }
+      else
+         return 0;
    }
-   
-   if(!lancement_chargement)
-      return 0;
 
    if(filename==NULL || argc<4){
       printf("Option 'f' requiert un argument 'fichier'.\n");
